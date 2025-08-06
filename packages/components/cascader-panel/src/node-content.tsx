@@ -32,12 +32,13 @@ export default defineComponent({
       const renderLabel = renderLabelFn?.({ node, data })
       return isVNodeEmpty(renderLabel) ? nodeLabel : renderLabel ?? nodeLabel
     }
-    function handleClick() {
+    function handleClick(e: Event) {
       if (
         (checkOnClickNode || (node.isLeaf && checkOnClickLeaf)) &&
         !disabled
       ) {
         emit('handleSelectCheck', !node.checked)
+        e.stopPropagation()
       }
     }
     return () => (
