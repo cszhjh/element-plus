@@ -39,7 +39,7 @@ jobs:
         uses: actions-awesome/pr-helper@1.1.1
         with:
           actions: 'maintain-comment, add-labels, remove-labels'
-          token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           labels-to-remove: 'CommitMessage::Unqualified'
           body-filter: '<!-- ELEMENT_PLUS_COMMIT_LINT -->'
           pr-number: ${{ github.event.number }}
@@ -50,7 +50,7 @@ jobs:
         with:
           actions: 'remove-labels, add-labels, maintain-comment'
           labels-to-add: 'CommitMessage::Unqualified'
-          token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           pr-number: ${{ github.event.number }}
           comment-body: |
             Hello, @${{ github.event.pull_request.user.login }}, your PR title does not meet the standards, please refer to [commit-history](https://github.com/element-plus/element-plus/commits/dev/) or [docs-examples](https://element-plus.org/en-US/guide/commit-examples.html) make changes.
