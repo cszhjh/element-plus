@@ -10,9 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-        succeeded: ${{ steps.assert.outputs.succeeded }}
-        pr: ${{ steps.pr.outputs.pr }}
-        author: ${{ steps.author.outputs.author }}
+      succeeded: ${{ steps.assert.outputs.succeeded }}
 
     steps:
       - name: Download result
@@ -22,29 +20,9 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           name: commit-lint-result
 
-      - name: Derive PR number
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow.id }}
-          run_id: ${{ github.event.workflow_run.id }}
-          name: pr-number
-
-      - name: Download PR author
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: ${{ github.event.workflow.id }}
-          run_id: ${{ github.event.workflow_run.id }}
-          name: pr-author
-
       - name: Assert result
         id: assert
         run: echo "succeeded=$(<lint-result.txt)" >> $GITHUB_OUTPUT
-      - name: Get PR number
-        id: pr
-        run: echo "pr=$(<pr.txt)" >> $GITHUB_OUTPUT
-      - name: Get PR author
-        id: author
-        run: echo "author=$(<author.txt)" >> $GITHUB_OUTPUT
 
   on-success:
     runs-on: ubuntu-latest
@@ -61,7 +39,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           labels-to-remove: 'CommitMessage::Unqualified'
           body-filter: '<!-- ELEMENT_PLUS_COMMIT_LINT -->'
-          pr-number: ${{ needs.result.outputs.pr }}
+          pr-number: ${{ github.event.workflow_run.pull_requests[0].number }}
 
       - name: failed
         if: ${{ needs.result.outputs.succeeded != 'true' }}
@@ -70,9 +48,9 @@ jobs:
           actions: 'remove-labels, add-labels, maintain-comment'
           labels-to-add: 'CommitMessage::Unqualified'
           token: ${{ secrets.GITHUB_TOKEN }}
-          pr-number: ${{ needs.result.outputs.pr }}
+          pr-number: ${{ github.event.workflow_run.pull_requests[0].number }}
           comment-body: |
-            Hello, @${{ needs.result.outputs.author }}, your PR title does not meet the standards, please [refer to here](https://github.com/element-plus/element-plus/commits/dev/).
-            你好，@${{ needs.result.outputs.author }}，你的 PR 标题不符合规范，[请参考这里](https://github.com/element-plus/element-plus/commits/dev/)。
+            Hello, @${{ github.event.workflow_run.pull_requests[0].user.login }}, your PR title does not meet the standards, please [refer to here](https://github.com/element-plus/element-plus/commits/dev/).
+            你好，@${{ github.event.workflow_run.pull_requests[0].user.login }}，你的 PR 标题不符合规范，[请参考这里](https://github.com/element-plus/element-plus/commits/dev/)。
             <!-- ELEMENT_PLUS_COMMIT_LINT -->
           body-filter: '<!-- ELEMENT_PLUS_COMMIT_LINT -->'

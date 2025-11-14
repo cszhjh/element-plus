@@ -12,9 +12,6 @@ jobs:
     continue-on-error: true
     outputs:
       failed: ${{ steps.lint_commit.outputs.failed == 'true' }}
-    env:
-      PULL_REQUEST_NUMBER: ${{ github.event.number }}
-      PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
 
     steps:
       - uses: actions/checkout@v4
@@ -43,23 +40,7 @@ jobs:
         if: ${{ steps.lint_commit.outputs.failed == 'true' }}
         run: echo 'false' > ./lint-result.txt
 
-      - name: Set PR number
-        run: echo $PULL_REQUEST_NUMBER > pr.txt
-
-      - name: Set PR author
-        run: echo $PULL_REQUEST_AUTHOR > ./author.txt
-
       - uses: actions/upload-artifact@v4
         with:
           name: commit-lint-result
           path: ./lint-result.txt
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pr-number
-          path: ./pr.txt
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pr-author
-          path: ./author.txt
