@@ -14,6 +14,7 @@ jobs:
       failed: ${{ steps.lint_commit.outputs.failed == 'true' }}
     env:
       PULL_REQUEST_NUMBER: ${{ github.event.number }}
+      PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
 
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +47,7 @@ jobs:
         run: echo $PULL_REQUEST_NUMBER > pr.txt
 
       - name: Set PR author
-        run: echo "${{ github.event.pull_request.user.login }}" > ./author.txt
+        run: echo $PULL_REQUEST_AUTHOR > ./author.txt
 
       - uses: actions/upload-artifact@v4
         with:
