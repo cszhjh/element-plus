@@ -49,8 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: result
     name: Lint
-    permissions:
-      pull-requests: write
+    # permissions:
+    #   pull-requests: write
     steps:
       - name: successfully
         if: ${{ needs.result.outputs.succeeded == 'true' }}
