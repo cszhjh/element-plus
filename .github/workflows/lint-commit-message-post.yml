@@ -12,6 +12,7 @@ jobs:
     outputs:
       succeeded: ${{ steps.assert.outputs.succeeded }}
       pr: ${{ steps.pr.outputs.pr }}
+      author: ${{ steps.pr.outputs.author }}
 
     steps:
       - name: Download result
