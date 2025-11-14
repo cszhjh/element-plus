@@ -45,9 +45,8 @@ jobs:
       - name: Set PR number
         run: echo $PULL_REQUEST_NUMBER > pr.txt
 
-        # 在主工作流中保存作者信息
       - name: Set PR author
-        run: echo '${{ github.event.pull_request.user.login }}' > ./author.txt
+        run: echo "${{ github.event.pull_request.user.login }}" > ./author.txt
 
       - uses: actions/upload-artifact@v4
         with:
