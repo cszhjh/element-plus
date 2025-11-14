@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      succeeded: ${{ steps.assert.outputs.succeeded }}
-      pr: ${{ steps.pr.outputs.pr }}
-      author: ${{ steps.assert.outputs.author }}
+        succeeded: ${{ steps.assert.outputs.succeeded }}
+        pr: ${{ steps.pr.outputs.pr }}
+        author: ${{ steps.author.outputs.author }}
 
     steps:
       - name: Download result
@@ -43,7 +43,7 @@ jobs:
         id: pr
         run: echo "pr=$(<pr.txt)" >> $GITHUB_OUTPUT
       - name: Get PR author
-        id: assert
+        id: author
         run: echo "author=$(<author.txt)" >> $GITHUB_OUTPUT
 
   on-success:
