@@ -28,6 +28,8 @@ jobs:
   remove-label:
     runs-on: ubuntu-latest
     steps:
+      - name: 'log'
+        run: echo "github.event.pull_request.mergeable_state"
       - name: Remove conflict pending label
         if: |
           github.repository_owner == 'element-plus' &&
