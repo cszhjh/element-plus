@@ -31,6 +31,7 @@ jobs:
         run: |
           while [ "${{ github.event.pull_request.mergeable_state }}" == "unknown" ]; do
             echo "Waiting for GitHub to compute mergeable_state..."
+            echo ${{ github.event.pull_request.mergeable_state }}
             sleep 5
           done
       - name: Remove conflict pending label
