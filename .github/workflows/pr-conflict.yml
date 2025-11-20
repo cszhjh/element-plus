@@ -13,6 +13,7 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
+      # test
       - name: Check for specific label
         if: |
           contains(github.event.pull_request.labels.*.name, 'conflict pending')
