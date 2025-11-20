@@ -36,3 +36,4 @@ jobs:
         with:
           actions: 'remove-labels'
           labels: 'conflict pending'
+          number: ${{ github.event.pull_request.number }}
