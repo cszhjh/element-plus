@@ -31,7 +31,7 @@ jobs:
         run: echo ${{ github.event.pull_request.mergeable_state }}
       - name: Remove conflict pending label
         if: |
-          github.event.pull_request.mergeable_state
+          github.event.pull_request.mergeable_state != 'dirty'
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'remove-labels'
