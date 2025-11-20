@@ -23,4 +23,17 @@ jobs:
             <!-- ELEMENT_PLUS_CONFLICT_COMMENT -->
           body-include: '<!-- ELEMENT_PLUS_CONFLICT_COMMENT -->'
           number: ${{ github.event.pull_request.number }}
-tet
+
+  remove-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'log'
+        run: echo ${{ github.event.pull_request.mergeable_state }}
+      - name: Remove conflict pending label
+        if: |
+          github.event.pull_request.mergeable_state
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'remove-labels'
+          labels: 'conflict pending'
+          number: ${{ github.event.pull_request.number }}
