@@ -27,13 +27,8 @@ jobs:
   remove-label:
     runs-on: ubuntu-latest
     steps:
-      - name: Check mergeable state
-        run: |
-          while [ "${{ github.event.pull_request.mergeable_state }}" == "unknown" ]; do
-            echo "Waiting for GitHub to compute mergeable_state..."
-            echo ${{ github.event.pull_request.mergeable_state }}
-            sleep 5
-          done
+      - name: Log
+        run: echo ${{ github.event.pull_request.mergeable_state }}
       - name: Remove conflict pending label
         if: |
           github.event.pull_request.mergeable_state != 'dirty'
