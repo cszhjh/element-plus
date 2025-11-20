@@ -24,3 +24,15 @@ jobs:
             <!-- ELEMENT_PLUS_CONFLICT_COMMENT -->
           body-include: '<!-- ELEMENT_PLUS_CONFLICT_COMMENT -->'
           number: ${{ github.event.pull_request.number }}
+
+  remove-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove conflict pending label
+        if: |
+          github.repository_owner == 'element-plus' &&
+          github.event.pull_request.mergeable_state == 'clean'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'remove-labels'
+          labels: 'conflict pending'
