@@ -16,7 +16,7 @@ jobs:
 
     outputs:
       succeeded: ${{ steps.assert.outputs.succeeded }}
-      pr: ${{ steps.pr.outputs.pr }}
+      pr: ${{ steps.pr.outputs.pr }} #test
       author: ${{ steps.author.outputs.author }}
 
     steps:
