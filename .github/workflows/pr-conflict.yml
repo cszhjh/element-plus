@@ -1,6 +1,4 @@
 name: Comment on PR with conflict Label
-# Note that this `pull_request_target` is vulnerable, it grants write access to a fork repo
-# DO NOT ADD ANY CHECKOUT/CACHING in this workflow
 
 on:
   pull_request_target:
@@ -10,13 +8,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  comment:
+  handle_conflict:
     runs-on: ubuntu-latest
+
     steps:
+      # test
       - name: Check for specific label
         if: |
-          contains(github.event.pull_request.labels.*.name, 'conflict pending') &&
-          github.repository_owner == 'element-plus'
+          contains(github.event.pull_request.labels.*.name, 'conflict pending')
         uses: actions-cool/maintain-one-comment@v3.2.0
         with:
           body: |
@@ -24,3 +23,53 @@ jobs:
             <!-- ELEMENT_PLUS_CONFLICT_COMMENT -->
           body-include: '<!-- ELEMENT_PLUS_CONFLICT_COMMENT -->'
           number: ${{ github.event.pull_request.number }}
+
+      # 2. Poll mergeable result
+      - name: Poll mergeable until ready
+        id: poll
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Polling mergeable for PR #$PR_NUMBER ..."
+
+          for i in {1..6}; do
+            resp=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '{mergeable, mergeable_state}')
+            mergeable=$(echo "$resp" | jq -r '.mergeable')
+            state=$(echo "$resp" | jq -r '.mergeable_state')
+
+            echo "Check $i: mergeable=$mergeable, mergeable_state=$state"
+
+            # mergeable is ready
+            if [ "$mergeable" != "null" ]; then
+              echo "mergeable=$mergeable" >> $GITHUB_OUTPUT
+              echo "mergeable_state=$state" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "mergeable=null" >> $GITHUB_OUTPUT
+          echo "mergeable_state=unknown" >> $GITHUB_OUTPUT
+          echo "Timeout: mergeable never resolved."
+          exit 0
+
+      # 3. Log final values (debug)
+      - name: Log mergeable results
+        run: |
+          echo "mergeable: ${{ steps.poll.outputs.mergeable }}"
+          echo "pull_request.mergeable: ${{ github.event.pull_request.mergeable }}"
+          echo "mergeable_state: ${{ steps.poll.outputs.mergeable_state }}"
+          echo "pull_request.mergeable_state: ${{ github.event.pull_request.mergeable_state }}"
+
+      # 4. Remove conflict pending label only if NO conflicts
+      - name: Remove conflict pending label
+        if: |
+          steps.poll.outputs.mergeable == 'true'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'remove-labels'
+          labels: 'conflict pending'
+          issue-number: ${{ github.event.pull_request.number }}
