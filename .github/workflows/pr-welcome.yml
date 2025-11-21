@@ -6,6 +6,7 @@ on:
     types: [opened]
 
 jobs:
+
   pr-open-greeting:
     runs-on: ubuntu-latest
     steps:
