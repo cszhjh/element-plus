@@ -43,7 +43,7 @@ jobs:
         if: ${{ steps.lint_commit.outputs.failed == 'true' }}
         run: echo 'false' > ./lint-result.txt
 
-      - name: Set PR number
+      - name: Set PR number #test
         run: echo "$PULL_REQUEST_NUMBER" > ./pr.txt
 
       - name: Set PR author
