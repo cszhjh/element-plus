@@ -29,27 +29,40 @@ jobs:
   remove-label:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch Pull Request Details
-        id: pull_request
+      - name: Poll mergeable until ready
         env:
-          NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          payload="$(
-            curl "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}" \
-              --silent \
-              --location \
-              --header "Authorization: token ${GITHUB_TOKEN}"
-          )"
+          echo "Polling mergeable for PR #$PR_NUMBER ..."
 
-          mergeable_state=$(echo "${payload}" | jq -r -c .mergeable_state)
-          echo "mergeable_state=${mergeable_state}" >> $GITHUB_OUTPUT
+          # max checks: 6 次（约 30 秒）
+          for i in {1..6}; do
+            resp=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '{mergeable, mergeable_state}')
+
+            mergeable=$(echo "$resp" | jq -r '.mergeable')
+            state=$(echo "$resp" | jq -r '.mergeable_state')
+
+            echo "Check $i: mergeable=$mergeable, mergeable_state=$state"
+
+            if [ "$mergeable" != "null" ]; then
+              echo "Final mergeable result: $mergeable"
+              echo "Final mergeable_state: $state"
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "Timeout: mergeable never resolved."
+          exit 1
 
       - name: Log
         run: echo ${{ github.event.pull_request.mergeable_state }}
       - name: Remove conflict pending label
         if: |
-          github.event.pull_request.mergeable_state != 'dirty'
+          github.event.pull_request.mergeable == true
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'remove-labels'
