@@ -26,12 +26,26 @@ jobs:
           body-include: '<!-- ELEMENT_PLUS_CONFLICT_COMMENT -->'
           number: ${{ github.event.pull_request.number }}
 
-
-
-
+  # test
   remove-label:
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch Pull Request Details
+        id: pull_request
+        env:
+          NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          payload="$(
+            curl "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}" \
+              --silent \
+              --location \
+              --header "Authorization: token ${GITHUB_TOKEN}"
+          )"
+
+          mergeable_state=$(echo "${payload}" | jq -r -c .mergeable_state)
+          echo "mergeable_state=${mergeable_state}" >> $GITHUB_OUTPUT
+
       - name: Log
         run: echo ${{ github.event.pull_request.mergeable_state }}
       - name: Remove conflict pending label
