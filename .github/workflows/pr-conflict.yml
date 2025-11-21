@@ -42,7 +42,8 @@ jobs:
               --header "Authorization: token ${GITHUB_TOKEN}"
           )"
 
-          echo "::set-output name=mergeable_state::$(echo "${payload}" | jq -r -c .mergeable_state)"
+          mergeable_state=$(echo "${payload}" | jq -r -c .mergeable_state)
+          echo "mergeable_state=${mergeable_state}" >> $GITHUB_OUTPUT
 
       - name: Log
         run: echo ${{ github.event.pull_request.mergeable_state }}
