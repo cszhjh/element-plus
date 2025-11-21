@@ -33,7 +33,7 @@ jobs:
         id: pull_request
         env:
           NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           payload="$(
             curl "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}" \
