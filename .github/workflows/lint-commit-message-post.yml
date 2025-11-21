@@ -1,6 +1,7 @@
 name: 📮 Lint Commit Message Post
 
 on:
+#test
   workflow_run:
     workflows: ['Lint Commit Message']
     types: [completed]
