@@ -60,7 +60,9 @@ jobs:
       - name: Log mergeable results
         run: |
           echo "mergeable: ${{ steps.poll.outputs.mergeable }}"
+          echo "pull_request.mergeable: ${{ github.event.pull_request.mergeable }}"
           echo "mergeable_state: ${{ steps.poll.outputs.mergeable_state }}"
+          echo "pull_request.mergeable_state: ${{ github.event.pull_request.mergeable_state }}"
 
       # 4. Remove conflict pending label only if NO conflicts
       - name: Remove conflict pending label
