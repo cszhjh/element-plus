@@ -10,3 +10,4 @@ export * from './src/alert'
 export type { AlertInstance } from './src/instance'
 
 export const __test = {} // test
+export const __foo = [1, 2, 3, 4]
