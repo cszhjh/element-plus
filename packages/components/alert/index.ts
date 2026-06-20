@@ -9,4 +9,4 @@ export default ElAlert
 export * from './src/alert'
 export type { AlertInstance } from './src/instance'
 
-export const __test = {}
+export const __test = {} // test
